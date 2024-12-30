@@ -32,10 +32,10 @@ FROM Movie
 WHERE Stars = 3 AND YOP BETWEEN 1393 AND 1403;
 
 -- 6. نمایش فیلم‌ها به تفکیک سال ساخت، در صورتی که درآمد حاصل از اکران آن‌ها کمتر از 1000 باشد
-SELECT YOP, *
+SELECT  *
 FROM Movie
 WHERE Income < 1000
-ORDER BY YOP ;
+ORDER BY YOP
 
 -- 7. پر فروش‌ترین فیلم هر سال
 SELECT YOP, Name, MAX(Income) AS MaxIncome
@@ -43,11 +43,10 @@ FROM Movie
 GROUP BY YOP, Name;
 
 -- 8. بررسی نام فیلمی با بیشترین امتیاز که پر فروش‌ترین فیلم سال 1402 بوده است
-SELECT Name
+SELECT TOP 1 Name
 FROM Movie
 WHERE YOP = 1402
 ORDER BY Income DESC, Stars DESC
-LIMIT 1;
 
 -- 9. مرتب‌سازی فیلم‌ها بر اساس گروه درآمد (3 گروه: بالای 3000، بین 1000 تا 3000، زیر 1000)
 SELECT *, 
@@ -60,15 +59,20 @@ FROM Movie
 ORDER BY IncomeGroup, Income DESC;
 
 -- 10. میانگین فروش فیلم‌ها به تفکیک گروه فروش
-SELECT 
-       CASE 
-           WHEN Income > 3000 THEN 'Group 1'
-           WHEN Income BETWEEN 1000 AND 3000 THEN 'Group 2'
-           WHEN Income < 1000 THEN 'Group 3'
-       END AS IncomeGroup,
-       AVG(Income) AS AvgIncome
-FROM Movie
+WITH GroupedMovies AS (
+    SELECT 
+           CASE 
+               WHEN Income > 3000 THEN 'Group 1'
+               WHEN Income BETWEEN 1000 AND 3000 THEN 'Group 2'
+               WHEN Income < 1000 THEN 'Group 3'
+           END AS IncomeGroup,
+           Income
+    FROM Movie
+)
+SELECT IncomeGroup, AVG(Income) AS AvgIncome
+FROM GroupedMovies
 GROUP BY IncomeGroup;
+
 
 select * from Movie
 
